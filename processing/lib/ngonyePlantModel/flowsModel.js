@@ -23,7 +23,7 @@ export default function setup(parameters) {
     flows.availableGenerationFlow = flows.river - flows.eFlows.total
     flows.availableGenerationFlowProportion = flows.availableGenerationFlow / flows.river
 
-    flows.canalFlow = d3.min([flows.availableGenerationFlow, parameters.unitsAvailable*parameters.ratedFlowUnit])
+    flows.canalFlow = d3.min([flows.availableGenerationFlow, parameters.unitsAvailable*parameters.maximumFlowUnit])
     if (flows.canalFlow < parameters.minimumFlowUnit) { 
       flows.canalFlow = 0
       if (!day.generation) {day.generation = {}}

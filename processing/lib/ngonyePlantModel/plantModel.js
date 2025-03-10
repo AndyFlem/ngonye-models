@@ -6,6 +6,7 @@ import { DateTime } from 'luxon'
 
 import eFlowsSetup from './eFlowsSetup.js'
 import flowsModelSetup from './flowsModel.js'
+import levelsAndLossesModelSetup from './levelsAndLossesModel.js'
 
 const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') )
 
@@ -23,6 +24,7 @@ console.log(parameters)
 
 // Load daily flow data
 let daily = loadDaily(folder, parameters)
+daily.map((v,i)=>v.index=i)
 
 // Calculate the eFlows exceedance values for the daily flow series (if needed)
 if (!daily[0].ewrExceedance || recalculateEFlows) {
@@ -31,13 +33,16 @@ if (!daily[0].ewrExceedance || recalculateEFlows) {
 }
 
 // Setup the flows model
-
 const flowsModel = flowsModelSetup(parameters)
+
+// Setup the levels and losses model
+const levelsAndLossesModel = levelsAndLossesModelSetup(parameters)
 
 daily.forEach(dy=>{
   dy.flows = flowsModel(dy)
+  dy.levels = levelsAndLossesModel(dy)
 })
-console.log(daily[0].flows)
+console.log(daily[33793])
 
 
 
