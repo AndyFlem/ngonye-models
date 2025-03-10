@@ -28,6 +28,8 @@ export function interpolate(data, xs, ys , x) {
   
   const sorted = data.toSorted((a, b) => a[xs] - b[xs])
   const indx = d3.bisectLeft(sorted.map(v=>v[xs]), x)
+
+  if (!sorted[indx]) { throw new Error (`Interpolation error: Input out of range: ${x}.`)}
   if (indx==0 || x==sorted[indx][xs]) return sorted[indx][ys]
   
   const a=sorted[indx-1]
@@ -59,7 +61,7 @@ export function interpolate2d(ZValues, X, Y) {
 	var Ymax = ZValues[0].length;
 
 	//Result
-	var result = {result: 0, error: ""};
+	var result = NaN
 
 	//Interpolated values
 	let XMY0 = 0; //Interpolated Z from X at  Y0
@@ -102,9 +104,9 @@ export function interpolate2d(ZValues, X, Y) {
 		X1Y1 = ZValues[X1i][Y1i];
 		
 		//Performs the calculations
-		if((X==X0 || X==X1)&&(Y==Y0 || Y==Y1))
-		result.error = "Exact match. No interpolation needed.";
-		else result.error = "Interpolated result.";
+		// if((X==X0 || X==X1)&&(Y==Y0 || Y==Y1))
+		// result.error = "Exact match. No interpolation needed.";
+		// else result.error = "Interpolated result.";
 
 		//X is on the lower edge, no interpolation needed
 		if(X==X0) {
@@ -138,9 +140,9 @@ export function interpolate2d(ZValues, X, Y) {
 		//Not valid data was found for the proper interpolation
 		if(isNaN(XMYM)) 
 		{
-			result.error = "Interpolation error: No data found for those inputs.";
+			throw new Error(`Interpolation error: No data found for those inputs ${X} ${Y}.`);
 		}
-		else result.result = XMYM;
+		else result = XMYM;
 
 	}
 

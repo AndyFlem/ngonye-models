@@ -35,7 +35,6 @@ const vicFallsDailyAll = d3.csvParse(fs.readFileSync(folder + inputFolder + vicF
   v.datetime = DateTime.fromJSDate(v.date)
   return v
 })
-
 const vicFallsDaily=vicFallsDailyAll.filter(v=>v.datetime<=cutoffDate)
 
 /*
@@ -47,7 +46,6 @@ const siomaDailyAll = d3.csvParse(fs.readFileSync(folder + inputFolder + SiomaIn
   v.flow=1093.0355*(v.level-2.85)**1.659
   return v
 })
-
 const siomaDaily = siomaDailyAll.filter(v=>v.datetime<=cutoffDate)
 
 /*

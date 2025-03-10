@@ -10,7 +10,7 @@ export const models = [
     unitsAvailable: 4,
     minimumHead: 10,
     maximumHead: 25.4,
-    maximumHeadShutdown: true,
+    maximumHeadShutdown: false,
     minimumFlowUnit: 50,
     maximumFlowUnit: 275,
     ratedFlowUnit: 220,
@@ -29,7 +29,10 @@ export const lookupFilesets = [
     headlossTurbine: 'headloss_turbine_fs.csv',
     tailwaterLevel: 'tailwater_levels.csv',
     eFlowsAssuranceSets: 'eflows_assurance_sets.csv',
-    eFlowsChannelFlows: 'eflows_channel_flows.csv'
+    eFlowsChannelFlows: 'eflows_channel_flows.csv',
+    channelSpillProportions: 'channel_splill_proportions.csv',
+    spillLimits: 'spill_limits.csv',
+    generatorEfficiency: 'generator_efficiency.csv'
   },
   {
     ref: 'sh',
@@ -39,7 +42,10 @@ export const lookupFilesets = [
     headlossTurbine: 'headloss_turbine_sh.csv',
     tailwaterLevel: 'tailwater_levels.csv',
     eFlowsAssuranceSets: 'eflows_assurance_sets.csv',
-    eFlowsChannelFlows: 'eflows_channel_flows.csv'
+    eFlowsChannelFlows: 'eflows_channel_flows.csv',
+    channelSpillProportions: 'channel_splill_proportions.csv',
+    spillLimits: 'spill_limits.csv',
+    generatorEfficiency: 'generator_efficiency.csv'
   },
   
 ]
