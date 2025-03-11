@@ -19,7 +19,7 @@ export default function setup(parameters) {
       try {
         generation.unitEfficiency = interpolate2d(hillchart, generation.unitFlow, generation.netHead)
       } catch (e) {
-        console.log(generation)
+        console.log(day)
         throw new Error('Unit efficiency error: ' + e.message)
       }
 

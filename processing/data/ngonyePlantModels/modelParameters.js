@@ -1,6 +1,7 @@
 export const models = [
   {
     modelRef:'base',
+    type: 'fs',
     modelName: 'Base Case',
     description: 'Base case model as presented to EPC bidders',
     ewrCategorySet: 'Recommendation 1',
@@ -20,6 +21,7 @@ export const models = [
     lookupsFileset: 'fs'
   },  {
     modelRef:'base_sh',
+    type: 'sh',
     modelName: 'Base Case Sinohydro Bid',
     description: 'Base case model as with parameters from Sinohydro bid',
     ewrCategorySet: 'Recommendation 1',
@@ -36,7 +38,11 @@ export const models = [
     ratedTurbineCapacity: 46.5,
     maxGeneratorOutput: 48.2,
     constrainFinalGeneratorOutput: true,
-    lookupsFileset: 'sh'
+    lookupsFileset: 'sh',
+    unitLimits: {
+      floodFlowCfs: [18.6, 65],
+      overloadCfs: [-10.2, 479]
+    }
   }
 
 ]
@@ -44,7 +50,6 @@ export const models = [
 export const lookupFilesets = [
   {
     ref: 'fs',
-    type: 'fs',
     headlossCanal: 'headloss_canal_fs.csv',
     hillchart: 'hillchart_fs.csv',
     headlossLeftChannel: 'headloss_leftchannel.csv',
@@ -55,11 +60,8 @@ export const lookupFilesets = [
     channelSpillProportions: 'channel_splill_proportions.csv',
     spillLimits: 'spill_limits.csv',
     generatorEfficiency: 'generator_efficiency.csv'
-  },
-  
-  {
+  }, {
     ref: 'sh',
-    type: 'sh',
     headlossCanal: 'headloss_canal_sh.csv',
     hillchart: 'hillchart_sh.csv',
     headlossLeftChannel: 'headloss_leftchannel.csv',
@@ -70,10 +72,7 @@ export const lookupFilesets = [
     channelSpillProportions: 'channel_splill_proportions.csv',
     spillLimits: 'spill_limits.csv',
     generatorEfficiency: 'generator_efficiency.csv',
-    unitLimits: {
-      floodFlowCfs: [18.6, 65],
-      overloadCfs: [-10.2, 479]
-    }
+
   },
   
 ]

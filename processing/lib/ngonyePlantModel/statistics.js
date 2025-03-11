@@ -11,7 +11,7 @@ export default function statistics(parameters, dys) {
       date: d.datetime.toISODate(),
       waterYear: d.waterYear,
       waterMonth: d.waterMonth,
-      energy: d.generation.constrained.plantEnergy
+      energy: d.generation.calc2.plantEnergy
     }
   })
 
@@ -21,14 +21,14 @@ export default function statistics(parameters, dys) {
       year: v[0].datetime.year,
       month: v[0].datetime.month,
       waterMonth: v[0].waterMonth,
-      energy: d3.sum(v,d=>d.generation.constrained.plantEnergy)
+      energy: d3.sum(v,d=>d.generation.calc2.plantEnergy)
     }
   },d=>d.datetime.startOf('month').toISODate()).map(v=>v[1])
 
   const yearly = d3.rollups(dys, v=>{
     return {
       year: v[0].waterYear,
-      energy: d3.sum(v,d=>d.generation.constrained.plantEnergy)
+      energy: d3.sum(v,d=>d.generation.calc2.plantEnergy)
     }
   },d=>d.waterYear).map(v=>v[1])
 

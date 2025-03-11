@@ -88,8 +88,11 @@ daily.forEach(dy=>{
   // if in the first calculation the units were beyond the overload line (high flow, high head)
   if (params.type == 'sh') { 
     dy.generation.calc2 = {}
+    //dy.generation.calc2.limit=limit(dy.generation.calc1.netHead, dy.generation.calc1.unitFlow)
     if (dy.generation.calc1.units < params.unitsAvailable && isOverload(dy.generation.calc1.netHead, dy.generation.calc1.unitFlow)) {
       dy.generation.calc2.units = dy.generation.calc1.units + 1
+    } else {
+      dy.generation.calc2.units = dy.generation.calc1.units
     }
     reCalc = true 
   }
@@ -102,7 +105,7 @@ daily.forEach(dy=>{
   }
 
 })
-console.log(daily[18993])
+console.log(daily.find(v=>v.datetime.toISODate() == '1995-10-01'))
 
 let stats = statistics(params, daily)
 
@@ -119,5 +122,5 @@ function loadDaily(folder, params) {
 }
 
 function isOverload(head, flow) {
-  return head > params.unitLimits.overloadCfs + (params.unitLimits.overloadCfs * flow)
+  return flow < (head * params.unitLimits.overloadCfs[0]) + params.unitLimits.overloadCfs[1] * flow
 }
