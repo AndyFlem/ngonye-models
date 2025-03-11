@@ -10,7 +10,7 @@ import { DateTime } from 'luxon'
 import { movingAverage } from '../library.js'
 
 /* Parameters */
-const cutoffWaterYear = 2016 //2024
+const cutoffWaterYear = 2024 //2024
 const inputFolder = '/data/gaugeData/'
 const outputFolder = '/data/syntheticFlowSeries/' + cutoffWaterYear + '/'
 const vicFallsInputFileName = 'daily_gauge_vicfalls.csv'

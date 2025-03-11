@@ -1,0 +1,3 @@
+type,hydrologySet,ewrCategorySet,tailwaterLift,headpondLift,plantCapacity,unitsAvailable,minimumHead,maximumHead,maximumHeadShutdown,minimumFlowUnit,maximumFlowUnit,ratedFlowUnit,ratedTurbineCapacity,maxGeneratorOutput,constrainFinalGeneratorOutput,lookupsFileset,modelRef,modelName,description,energyAnnualMean,energyAnnualP50
+sh,2016,Recommendation 1,0,0,180,4,10,25.4,true,50,275,220,46.5,48.2,true,sh,base_sh,Base Case Sinohydro Bid,Base case model as with parameters from Sinohydro bid,849557.3405986326,852921.4908549724
+fs,2016,Recommendation 1,0,0,180,4,10,25.4,false,50,275,220,46.5,48.2,false,fs,base_fs,Base Case FS,Base case model as presented to EPC bidders with FS parameters,829668.2760998091,834894.0460416684

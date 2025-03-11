@@ -1,49 +1,57 @@
+export const baseParams = {
+  type: 'sh',
+  hydrologySet:'2016',
+  ewrCategorySet: 'Recommendation 1',
+  tailwaterLift: 0,
+  headpondLift: 0,
+  plantCapacity: 180,
+  unitsAvailable: 4,
+  minimumHead: 10,
+  maximumHead: 25.4,
+  maximumHeadShutdown: true,
+  minimumFlowUnit: 50,
+  maximumFlowUnit: 275,
+  ratedFlowUnit: 220,
+  ratedTurbineCapacity: 46.5,
+  maxGeneratorOutput: 48.2,
+  constrainFinalGeneratorOutput: true,
+  lookupsFileset: 'sh',
+  unitLimits: {
+    floodFlowCfs: [18.6, 65],
+    overloadCfs: [-10.2, 479]
+  }  
+}
 export const models = [
   {
-    modelRef:'base',
-    type: 'fs',
-    modelName: 'Base Case',
-    description: 'Base case model as presented to EPC bidders',
-    ewrCategorySet: 'Recommendation 1',
-    tailwaterLift: 0,
-    headpondLift: 0,
-    plantCapacity: 180,
-    unitsAvailable: 4,
-    minimumHead: 10,
-    maximumHead: 25.4,
-    maximumHeadShutdown: false,
-    minimumFlowUnit: 50,
-    maximumFlowUnit: 275,
-    ratedFlowUnit: 220,
-    ratedTurbineCapacity: 49.1,
-    maxGeneratorOutput: 48.2,
-    constrainFinalGeneratorOutput: false,
-    lookupsFileset: 'fs'
-  },  {
     modelRef:'base_sh',
-    type: 'sh',
     modelName: 'Base Case Sinohydro Bid',
     description: 'Base case model as with parameters from Sinohydro bid',
-    ewrCategorySet: 'Recommendation 1',
-    tailwaterLift: 0,
-    headpondLift: 0,
-    plantCapacity: 180,
-    unitsAvailable: 4,
-    minimumHead: 10,
-    maximumHead: 25.4,
+  },
+  {
+    modelRef:'base_sh_2024',
+    modelName: 'Base Case Sinohydro Bid - Hydrology to 2024',
+    description: 'Base case model as with parameters from Sinohydro bid',
+  },  
+  {
+    modelRef:'base_fs',
+    modelName: 'Base Case FS',
+    description: 'Base case model as presented to EPC bidders with FS parameters',
+    type: 'fs',
     maximumHeadShutdown: false,
-    minimumFlowUnit: 50,
-    maximumFlowUnit: 275,
-    ratedFlowUnit: 220,
-    ratedTurbineCapacity: 46.5,
-    maxGeneratorOutput: 48.2,
-    constrainFinalGeneratorOutput: true,
-    lookupsFileset: 'sh',
-    unitLimits: {
-      floodFlowCfs: [18.6, 65],
-      overloadCfs: [-10.2, 479]
-    }
+    constrainFinalGeneratorOutput: false,
+    lookupsFileset: 'fs'
+  },
+  {
+    modelRef:'base_fs',
+    modelName: 'Base Case FS - Hydrology to 2024',
+    description: 'Base case model as presented to EPC bidders with FS parameters  - Hydrology to 2024',
+    hydrologySet:'2016',
+    type: 'fs',
+    maximumHeadShutdown: false,
+    constrainFinalGeneratorOutput: false,
+    lookupsFileset: 'fs'
   }
+
 ]
 
 export const lookupFilesets = [
