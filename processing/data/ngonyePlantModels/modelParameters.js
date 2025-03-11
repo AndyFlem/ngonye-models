@@ -44,7 +44,6 @@ export const models = [
       overloadCfs: [-10.2, 479]
     }
   }
-
 ]
 
 export const lookupFilesets = [

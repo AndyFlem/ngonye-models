@@ -34,8 +34,7 @@ export default function statistics(parameters, dys) {
 
   const statistics = {
     energyAnnualMean: d3.mean(yearly, d=>d.energy),
-    energyAnnualP50: d3.quantile(yearly, 0.5, d=>d.energy),
-    
+    energyAnnualP50: d3.quantile(yearly, 0.5, d=>d.energy),   
   }
 
   return {daily,monthly,yearly, statistics}

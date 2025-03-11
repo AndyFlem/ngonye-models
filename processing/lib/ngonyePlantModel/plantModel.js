@@ -89,6 +89,7 @@ daily.forEach(dy=>{
   if (params.type == 'sh') { 
     dy.generation.calc2 = {}
     //dy.generation.calc2.limit=limit(dy.generation.calc1.netHead, dy.generation.calc1.unitFlow)
+    dy.generation.overloadLine=overloadLine(dy.generation.calc1.netHead, dy.generation.calc1.unitFlow)
     if (dy.generation.calc1.units < params.unitsAvailable && isOverload(dy.generation.calc1.netHead, dy.generation.calc1.unitFlow)) {
       dy.generation.calc2.units = dy.generation.calc1.units + 1
     } else {
@@ -122,5 +123,9 @@ function loadDaily(folder, params) {
 }
 
 function isOverload(head, flow) {
-  return flow < (head * params.unitLimits.overloadCfs[0]) + params.unitLimits.overloadCfs[1] * flow
+  return flow > (head * params.unitLimits.overloadCfs[0]) + params.unitLimits.overloadCfs[1]
+}
+
+function overloadLine(head, flow) {
+  return  (head * params.unitLimits.overloadCfs[0]) + params.unitLimits.overloadCfs[1]
 }
