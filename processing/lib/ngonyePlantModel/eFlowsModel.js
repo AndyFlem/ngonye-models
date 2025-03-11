@@ -12,7 +12,9 @@ export default function setup(parameters) {
   const eFlowsSets_raw = d3.csvParse(fs.readFileSync(folder + 'lookups/' + parameters.lookupFileset.eFlowsAssuranceSets, 'utf-8'))
   const eFlowsSets = d3.groups(eFlowsSets_raw,v=>v.Set).map(v=>v[1][0])
   const eFlowSet = eFlowsSets.find(v=>v.Set==parameters.ewrCategorySet)
-  if (!eFlowSet) { throw new Error('EWR category set not found') }
+  if (!eFlowSet) { 
+    throw new Error(`EWR category set not found: ${parameters.ewrCategorySet}`)
+  }
 
 
   // Load the eFlows channel flows

@@ -16,6 +16,7 @@ const inputFileName = `ngonyeFlowDaily.csv`
 
 const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') )
 
+
 // Delete all files in the output folder
 fs.readdirSync(folder + outputFolder).forEach(file => {
   fs.unlink(folder + outputFolder + file, (err) => {

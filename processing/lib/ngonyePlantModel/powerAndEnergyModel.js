@@ -30,7 +30,12 @@ export default function setup(parameters) {
       //Get the generator efficiency
       generation.generatorEfficiency = interpolate(generatorEfficiency, 'UnitPowerFactor', 'GeneratorEfficiency', generation.unitPowerFactor )
     
-      generation.generatorPower = generation.unitPower * generation.generatorEfficiency
+      if (parameters.constrainFinalGeneratorOutput) {
+        generation.generatorPower = d3.min([generation.unitPower * generation.generatorEfficiency,parameters.maxGeneratorOutput])
+      } else {
+        generation.generatorPower = generation.unitPower * generation.generatorEfficiency
+      }
+      
       generation.plantPower = generation.generatorPower * generation.units
       generation.plantEnergy = generation.plantPower * 24
     } else {

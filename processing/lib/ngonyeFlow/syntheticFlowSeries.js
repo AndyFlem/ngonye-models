@@ -21,6 +21,7 @@ const cutoffDate = DateTime.fromObject({year: cutoffWaterYear+1, month: 10, day:
 const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') )
 
 // Delete all files in the output folder
+console.log(folder + outputFolder)
 fs.readdirSync(folder + outputFolder).forEach(file => {
   fs.unlink(folder + outputFolder + file, (err) => {
     if (err) {
@@ -29,7 +30,8 @@ fs.readdirSync(folder + outputFolder).forEach(file => {
   })
 })
 
-
+console.log('*** Processing Ngonye Falls Synthetic Historic Flow Series')
+console.log('** Load input files')
 /* Load the Vic Falls Data */
 const vicFallsDailyAll = d3.csvParse(fs.readFileSync(folder + inputFolder + vicFallsInputFileName, 'utf-8'), d3.autoType).map(v=> {
   v.datetime = DateTime.fromJSDate(v.date)
@@ -51,6 +53,7 @@ const siomaDaily = siomaDailyAll.filter(v=>v.datetime<=cutoffDate)
 /*
 Build a Flow Duration Curve table in 0.1% exceedance increments.
 */
+console.log('** Build FDC table')
 const fdcs = [...Array(1001).keys()].map(v=> {
   return {
     exceedance: v/1000,
@@ -63,6 +66,7 @@ Add FDC flows for the full Vic Falls gauge.
 Add FDC flows for the Sioma gauge.
 Add FDC flows for the portion of the Vic Falls gauge that overlaps with the Sioma gauge.
 */
+console.log('** Add FDC flows')
 fdcs.forEach(v=> {
   v.vicFallsFull = d3.quantile(vicFallsDaily, v.exceedance, d=>d.flow)
   v.sioma = d3.quantile(siomaDaily, v.exceedance, d=>d.flow)
@@ -75,6 +79,7 @@ fdcs.forEach(v=> {
 /*
 Calculate the ratio of Vic Falls flows : Vic Falls overlapping flows - across the FDC.
 */
+console.log('** Calculate ratios')
 fdcs.forEach(v=> {
   v.vicFallsRatio = v.vicFallsFull/v.vicFallsOverlap
 })
@@ -82,6 +87,7 @@ fdcs.forEach(v=> {
 /*
 Smooth the Vic Falls ratio (0.7% moving average) except at the tails of the FDC.
 */
+console.log('** Smooth')
 const smoothedRatios = movingAverage(fdcs.map(v=>v.vicFallsRatio), 7)
 fdcs.forEach((v,i)=> {
   if (i>=10 && i<fdcs.length-10) {
@@ -95,6 +101,7 @@ fdcs.forEach((v,i)=> {
 /*
 Produce a scaled FDC for Ngonye by using the factors calculated for the Vic Falls data.
 */
+console.log('** Scale FDC')
 fdcs.forEach(v=> {
   v.ngonyeScaled = v.sioma * v.vicFallsRatioSmoothed
 })
@@ -103,6 +110,7 @@ fdcs.forEach(v=> {
 /*
 Calculate a conversion factor as the ratio between the scaled Ngonye flows and the full Vic Falls series flows.
 */
+console.log('** Conversion factor')
 fdcs.forEach(v=> {
   v.conversionFactor = v.ngonyeScaled / v.vicFallsFull
 })
@@ -111,6 +119,7 @@ fdcs.forEach(v=> {
 /*
 Give each record in the full Vic Falls series its corresponding conversion factor by lookup from the FDC. 
 */
+console.log('** Lookup')
 vicFallsDaily.forEach(v=> {
   let indx = d3.bisectRight(fdcs.map(v=>v.vicFallsFull), v.flow)-1
   
@@ -123,13 +132,8 @@ vicFallsDaily.forEach(v=> {
 Prepare the full synthetic series for Ngonye by applying the 11 day lag to the Vic Falls 
 series and the conversion factors calculated previoulsy.
 */
+console.log('** Prepare synthectic')
 const ngonyeSynthetic = vicFallsDaily.map((v,i)=> {
-  if (i<11) {
-    return {
-      date: v.date, 
-      flow: v.flow
-    }
-  }
   if (i>=vicFallsDaily.length-11) { 
     return {
       date: v.date, 
@@ -142,10 +146,10 @@ const ngonyeSynthetic = vicFallsDaily.map((v,i)=> {
   }
 })
 
-//console.log(ngonyeSynthetic[150])
+console.log(ngonyeSynthetic[ngonyeSynthetic.length-1])
 
 
-fs.writeFileSync(folder + outputFolder + `ngonyeFDCs.csv`, d3.csvFormat(fdcs))
-fs.writeFileSync(folder + outputFolder + `ngonyeFlowDaily.csv`, d3.csvFormat(ngonyeSynthetic))
-//fs.writeFileSync(folder + outputFolder + `vicFallsDaily_${cutoffWaterYear}.csv`, d3.csvFormat(vicFallsDaily))
-//fs.writeFileSync(folder + outputFolder + `sioma_${cutoffWaterYear}.csv`, d3.csvFormat(siomaDaily))
+ fs.writeFileSync(folder + outputFolder + `ngonyeFDCs.csv`, d3.csvFormat(fdcs))
+ fs.writeFileSync(folder + outputFolder + `ngonyeFlowDaily.csv`, d3.csvFormat(ngonyeSynthetic))
+fs.writeFileSync(folder + outputFolder + `vicFallsDaily_${cutoffWaterYear}.csv`, d3.csvFormat(vicFallsDaily))
+fs.writeFileSync(folder + outputFolder + `sioma_${cutoffWaterYear}.csv`, d3.csvFormat(siomaDaily))

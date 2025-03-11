@@ -63,10 +63,11 @@ export default function eFlowsSetup(parameters) {
   })
 
   daily.forEach(d=>delete d.ewrMeasurementDate)
-  daily.forEach(d=>delete d.ewrMeasureExceedance)
+  //daily.forEach(d=>delete d.ewrMeasureExceedance)
   daily.forEach(d=>delete d.datetime)
 
   fs.writeFileSync(folder + inputFolder + 'daily.csv', d3.csvFormat(daily))
+  fs.writeFileSync(folder + inputFolder + 'ewrFDCs.csv', d3.csvFormat(fdcs.map(f=> f.exceedances)))
 
 }
 

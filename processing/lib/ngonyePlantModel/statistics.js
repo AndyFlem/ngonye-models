@@ -9,7 +9,8 @@ export default function statistics(parameters, dys) {
   const daily = dys.map(d=>{
     return {
       date: d.datetime.toISODate(),
-      waterMonth: d.datetime.month,
+      waterYear: d.waterYear,
+      waterMonth: d.waterMonth,
       energy: d.generation.constrained.plantEnergy
     }
   })
@@ -26,12 +27,16 @@ export default function statistics(parameters, dys) {
 
   const yearly = d3.rollups(dys, v=>{
     return {
-      datetime: v[0].datetime,
-      year: v[0].datetime.year,
+      year: v[0].waterYear,
       energy: d3.sum(v,d=>d.generation.constrained.plantEnergy)
     }
-  },d=>d.datetime.startOf('year').toISODate()).map(v=>v[1])
+  },d=>d.waterYear).map(v=>v[1])
 
+  const statistics = {
+    energyAnnualMean: d3.mean(yearly, d=>d.energy),
+    energyAnnualP50: d3.quantile(yearly, 0.5, d=>d.energy),
+    
+  }
 
-  return {daily,monthly,yearly}
+  return {daily,monthly,yearly, statistics}
 }

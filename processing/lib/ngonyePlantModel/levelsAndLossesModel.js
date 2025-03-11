@@ -68,7 +68,10 @@ export default function setup(parameters) {
       } else {
         generation.headlossTurbine = 0
       }
-      generation.netHead = day.levels.grossHead - day.levels.headlosses.leftchannel - day.levels.headlosses.canal - generation.headlossTurbine  
+      generation.netHead = day.levels.grossHead - day.levels.headlosses.leftchannel - day.levels.headlosses.canal - generation.headlossTurbine
+      if (generation.netHead < parameters.minimumHead) {
+        day.generation.shutoffLowHead = true
+      }
     }
   }
 

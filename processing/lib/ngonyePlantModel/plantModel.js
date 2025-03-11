@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import fs from 'fs'
 import path from 'path'
-import { domainToASCII, fileURLToPath } from 'url'
+import { fileURLToPath } from 'url'
 import { DateTime } from 'luxon'
 
 import eFlowsSetup from './eFlowsSetup.js'
@@ -12,81 +12,112 @@ import statistics from './statistics.js'
 
 const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') ) + '/data/'
 
-const modelRef = 'base'
+const modelRef = 'base_sh'
 const hydrologySet = '2016'
 const recalculateEFlows = false
 
-// Load the parameters
+// Load the params
 import { models, lookupFilesets }  from '../../data/ngonyePlantModels/modelParameters.js'
 
-const parameters = models.find(v=>v.modelRef==modelRef)
-parameters.hydrologySet = hydrologySet
-parameters.lookupFileset = lookupFilesets.find(v=>v.ref == parameters.lookupsFileset)
-//console.log(parameters)
+const params = models.find(v=>v.modelRef==modelRef)
+params.hydrologySet = hydrologySet
+params.lookupFileset = lookupFilesets.find(v=>v.ref == params.lookupsFileset)
+//console.log(params)
 
 
 // Load daily flow data
-let daily = loadDaily(folder, parameters)
+let daily = loadDaily(folder, params)
 daily.map((v,i)=>v.index=i)
 
 // Calculate the eFlows exceedance values for the daily flow series (if needed)
 if (!daily[0].ewrExceedance || recalculateEFlows) {
-  eFlowsSetup(parameters)
-  loadDaily(folder, parameters)
+  eFlowsSetup(params)
+  loadDaily(folder, params)
 }
 
 // Setup the flows model
-const flowsModel = flowsModelSetup(parameters)
+const flowsModel = flowsModelSetup(params)
 
 // Setup the levels and losses model
-const levelsAndLossesModel = levelsAndLossesModelSetup(parameters)
+const levelsAndLossesModel = levelsAndLossesModelSetup(params)
 
 //Setup the power and energy model
-const powerAndEnergyModel = powerAndEnergyModelSetup(parameters)
+const powerAndEnergyModel = powerAndEnergyModelSetup(params)
 
 daily.forEach(dy=>{
+  // ****************************************
+  // ** Calculate common conditions **
+  // ****************************************
+
   // Get the eFlows for each channel, calculate any spill flows, flow available for generation and the canal flow
   dy.flows = flowsModel(dy)
   // Get the headpond and tailwater levels and the headlosses in the canal and the left channel
   dy.levels = levelsAndLossesModel.upstream(dy)
 
+  // ****************************************
+  // ** Calculate power without generator limits**
+  // ****************************************
   if (!dy.generation) { dy.generation = {} }  
-
-  // Calculate the generation without generator constraints
-  dy.generation.unconstrained = {}
-  dy.generation.unconstrained.units = Math.ceil(dy.flows.canal / parameters.maximumFlowUnit)
   
-  levelsAndLossesModel.unitHeadlosses(dy, dy.generation.unconstrained)
+  dy.generation.calc1 = {}
+  dy.generation.calc1.units = Math.ceil(dy.flows.canal / params.maximumFlowUnit)
   
-  powerAndEnergyModel(dy, dy.generation.unconstrained)
+  levelsAndLossesModel.unitHeadlosses(dy, dy.generation.calc1)
+  
+  powerAndEnergyModel(dy, dy.generation.calc1)
 
-  // If the generators are above their rated capacity then increase the number of units in use (if possible)
-  if (dy.generation.unconstrained.generatorPower>parameters.maxGeneratorOutput && dy.generation.unconstrained.units < parameters.unitsAvailable) {
+  // ****************************************
+  // ** If necassary, recalculate power with generator limits**
+  // ****************************************
+  let reCalc = false
+  // If this is the FS style model 
+  // and the generators are above their rated capacity then increase the number of units in use (if possible)
+  if (
+    params.type == 'fs' && 
+    params.dy.generation.calc1.generatorPower>params.maxGeneratorOutput && 
+    dy.generation.calc1.units < params.unitsAvailable) {
 
-    dy.generation.generatorConstrained = true
-    dy.generation.constrained = {}
-    dy.generation.constrained.units = dy.generation.unconstrained.units + 1
-    
-    levelsAndLossesModel.unitHeadlosses(dy, dy.generation.constrained)
-    
-    powerAndEnergyModel(dy, dy.generation.constrained)
+      dy.generation.generatorConstrained = true
+      dy.generation.calc2 = {}
+      dy.generation.calc2.units = dy.generation.calc1.units + 1
+      
+      reCalc = true 
+  }
+
+  // For the Sino/Andritz hillchart then increase number of turbines in use (if possible)
+  // if in the first calculation the units were beyond the overload line (high flow, high head)
+  if (params.type == 'sh') { 
+    dy.generation.calc2 = {}
+    if (dy.generation.calc1.units < params.unitsAvailable && isOverload(dy.generation.calc1.netHead, dy.generation.calc1.unitFlow)) {
+      dy.generation.calc2.units = dy.generation.calc1.units + 1
+    }
+    reCalc = true 
+  }
+  
+  if (reCalc) {
+    levelsAndLossesModel.unitHeadlosses(dy, dy.generation.calc2)
+    powerAndEnergyModel(dy, dy.generation.calc2)
   } else {
-    dy.generation.constrained = dy.generation.unconstrained
+    dy.generation.calc2 = dy.generation.calc1
   }
 
 })
-console.log(daily[daily.length-1])
+console.log(daily[18993])
 
+let stats = statistics(params, daily)
 
-let stats = statistics(parameters, daily)
+console.log(stats.statistics)
 
-fs.writeFileSync(folder + 'ngonyePlantModels/models/' + parameters.modelRef + '/pe_daily.csv', d3.csvFormat(stats.daily))
+fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_daily.csv', d3.csvFormat(stats.daily))
+fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_yearly.csv', d3.csvFormat(stats.yearly))
 
-
-
-function loadDaily(folder, parameters) {
-  return d3.csvParse(fs.readFileSync(folder + '/syntheticFlowSeries/' + parameters.hydrologySet + '/processed/daily.csv', 'utf-8'), d3.autoType).map(v=> {
+function loadDaily(folder, params) {
+  return d3.csvParse(fs.readFileSync(folder + '/syntheticFlowSeries/' + params.hydrologySet + '/processed/daily.csv', 'utf-8'), d3.autoType).map(v=> {
     v.datetime = DateTime.fromJSDate(v.date).minus({hours: 2})
     return v
   })  
+}
+
+function isOverload(head, flow) {
+  return head > params.unitLimits.overloadCfs + (params.unitLimits.overloadCfs * flow)
 }
