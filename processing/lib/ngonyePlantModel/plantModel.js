@@ -13,7 +13,6 @@ const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') ) + '/dat
 
 export default function plantModel(params, daily) {
 
-
   // ****************************************
   // ** Setup the models
   // Setup the flows model

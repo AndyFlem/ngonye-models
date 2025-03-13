@@ -7,21 +7,10 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { DateTime } from 'luxon'
-import { Console } from 'console'
 
-export default function eFlowsSetup(parameters) {
+export default function eFlowsSetup(daily) {
   
   console.log('**** Setting up eFlows')
-
-  const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') )
-  const inputFolder = '/data/syntheticFlowSeries/' + parameters.hydrologySet + '/processed/'
-  // Load the daily flow data
-
-  const daily = d3.csvParse(fs.readFileSync(folder + inputFolder + 'daily.csv', 'utf-8'), d3.autoType).map(v=> {
-    v.datetime = DateTime.fromJSDate(v.date).minus({hours: 2})
-    return v
-  })
-
 
   // Build FDCs for each of the measurement dates
   const measurementDates = [[10, 1]]
@@ -38,7 +27,6 @@ export default function eFlowsSetup(parameters) {
       day: m[1],
       exceedances: [...Array(101).keys()].map(e=> {
         return d3.quantile(daily.filter(d=>d.datetime.month == m[0] && d.datetime.day == m[1]), e/100, d=>d.flow) 
-        
       })
     }
 
@@ -66,13 +54,13 @@ export default function eFlowsSetup(parameters) {
   })
 
   //daily.forEach(d=>delete d.ewrMeasurementDate)
-  daily.forEach(v=>v.ewrMeasurementDate = v.ewrMeasurementDate.toISODate())
+  //daily.forEach(v=>v.ewrMeasurementDate = v.ewrMeasurementDate.toISODate())
   //daily.forEach(d=>delete d.ewrMeasureExceedance)
-  daily.forEach(d=>delete d.datetime)
+  //daily.forEach(d=>delete d.datetime)
 
-  fs.writeFileSync(folder + inputFolder + 'daily.csv', d3.csvFormat(daily))
-  fs.writeFileSync(folder + inputFolder + 'ewrFDCs.csv', d3.csvFormat(fdcs.map(f=> f.exceedances)))
-
+  //fs.writeFileSync(folder + inputFolder + 'daily.csv', d3.csvFormat(daily))
+  //fs.writeFileSync(folder + inputFolder + 'ewrFDCs.csv', d3.csvFormat(fdcs.map(f=> f.exceedances)))
+  return daily
 }
 
 // Gives the measure date (proceeding 8th, 18th or 28th) for the given date

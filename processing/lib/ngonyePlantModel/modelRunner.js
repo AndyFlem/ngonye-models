@@ -27,7 +27,7 @@ models.forEach(model=>{
   if (modelsReportIndx == -1) {
     runModel = true
   } else {
-    if (modelsReport[modelsReportIndx].energyAnnualMean==null) {
+    if (modelsReport[modelsReportIndx].EnergyAnnual_mean==null) {
       runModel = true
     }
     if (model.force) {
@@ -43,8 +43,6 @@ models.forEach(model=>{
       fs.mkdirSync(folder + 'ngonyePlantModels/models/' + modelRef, { recursive: true })
     }
 
-    const recalculateEFlows = false
-
     // *****************************************************
     // ** Load model params based on the modelRef
     const modelParams = models.find(v=>v.modelRef==modelRef)
@@ -55,14 +53,20 @@ models.forEach(model=>{
 
     // ********************
     // Load daily flow data
-    let daily = loadDaily(folder, params)
-    daily.map((v,i)=>v.index=i)
+    let daily = d3.csvParse(fs.readFileSync(folder + '/syntheticFlowSeries/' + params.hydrologySet + '/processed/daily.csv', 'utf-8'), d3.autoType).map(v=> {
+      v.datetime = DateTime.fromJSDate(v.date).minus({hours: 2})
+      return v
+    })  
+    daily.map((v,i)=>v.index=i) 
 
     // *******************************************************************************
     // Recalculate the eFlows exceedance values for the daily flow series (if needed)
+    const recalculateEFlows = false
     if (!daily[0].ewrExceedance || recalculateEFlows) {
-      eFlowsSetup(params)
-      daily = loadDaily(folder, params)
+      // Calculate the eFlows setup values
+      daily = eFlowsSetup(daily)
+      // Save the daily flow data
+      fs.writeFileSync(folder + '/syntheticFlowSeries/' + params.hydrologySet + '/processed/daily.csv', d3.csvFormat(daily))
     }    
 
     // *******************************************************************************
@@ -102,10 +106,3 @@ models.forEach(model=>{
     console.log(`Not running model ${modelRef}`)
   }
 })
-
-function loadDaily(folder, params) {
-  return d3.csvParse(fs.readFileSync(folder + '/syntheticFlowSeries/' + params.hydrologySet + '/processed/daily.csv', 'utf-8'), d3.autoType).map(v=> {
-    v.datetime = DateTime.fromJSDate(v.date).minus({hours: 2})
-    return v
-  })  
-}

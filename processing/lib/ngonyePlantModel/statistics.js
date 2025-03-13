@@ -33,8 +33,8 @@ export default function statistics(parameters, dys) {
         Turbines_min: d3.min(v,d=>d.generation.calc2.units),
         Turbines_mean: d3.mean(v,d=>d.generation.calc2.units),
         Flow_mean: toP(d3.mean(v,d=>d.flow),4),
-        Flow_min: toP(d3.min(v,d=>d.flow),4),      
-        Flow_max: toP(d3.max(v,d=>d.flow),4),      
+        Flow_min: toP(d3.min(v,d=>d.flow),4),
+        Flow_max: toP(d3.max(v,d=>d.flow),4),
         FlowAvailableForGeneration_mean: toP(d3.mean(v,d=>d.flows.availableGenerationFlow),4),
         FlowAvailableForGeneration_min: toP(d3.min(v,d=>d.flows.availableGenerationFlow),4),
         EFlow_mean: toP(d3.mean(v,d=>d.flows.eFlows.total),4),
@@ -45,7 +45,7 @@ export default function statistics(parameters, dys) {
         SpillFlow_max: toP(d3.max(v,d=>d.flows.spill.total),4),
         EFlowProportion_mean: toP(d3.mean(v,d=>d.flows.eFlowProportion),3),
         EFlowProportion_min: toP(d3.min(v,d=>d.flows.eFlowProportion),3),
-        EFlowProportion_max: toP(d3.max(v,d=>d.flows.eFlowProportion),3),      
+        EFlowProportion_max: toP(d3.max(v,d=>d.flows.eFlowProportion),3),
         CanalFlow_mean: toP(d3.mean(v,d=>d.flows.canal),4),
         CanalFlow_min: toP(d3.min(v,d=>d.flows.canal),4),
         CanalFlow_max: toP(d3.max(v,d=>d.flows.canal),4),
@@ -90,7 +90,7 @@ export default function statistics(parameters, dys) {
         UnitPower_max: toP(d3.max(v,d=>d.generation.calc2.unitPower),4),
         GeneratorPower_mean: toP(d3.mean(v,d=>d.generation.calc2.generatorPower),4),
         GeneratorPower_min: toP(d3.min(v,d=>d.generation.calc2.generatorPower),4),
-        GeneratorPower_max: toP(d3.max(v,d=>d.generation.calc2.generatorPower),4),      
+        GeneratorPower_max: toP(d3.max(v,d=>d.generation.calc2.generatorPower),4),
         LowFlowShutoffDays: v.filter(d=>d.generation.shutoffLowFlow).length,
         HighHeadShutoffDays: v.filter(d=>d.generation.shutoffHighHead).length, 
         LowHeadShutoffDays: v.filter(d=>d.generation.shutoffLowHead).length,
@@ -115,48 +115,59 @@ export default function statistics(parameters, dys) {
   const weekly = aggregate(dys, d=>d.datetime.startOf('week'))
   //console.log(weekly[1])
 
-  const yearly = d3.rollups(dys, v=>{
-    let ret = {
-      WaterYear: v[0].waterYear,
-      Energy: toP(d3.sum(v,d=>d.generation.calc2.plantEnergy)/1000,4), //MWh
-      Power_max: toP(d3.max(v,d=>d.generation.calc2.plantPower),4),
-      Power_min: toP(d3.min(v,d=>d.generation.calc2.plantPower),4),
-      Power_mean: toP(d3.mean(v,d=>d.generation.calc2.plantPower),4),
-      Flow_mean: toP(d3.mean(v,d=>d.flow),4),
-      Flow_min: toP(d3.min(v,d=>d.flow),4),      
-      Flow_max: toP(d3.max(v,d=>d.flow),4),
-      RiverVolume: toP(d3.sum(v,d=>d.flow)*24*60*60/1000/1000/1000,3), //km3
-      EFlowVolume: toP(d3.sum(v,d=>d.flows.eFlows.total)*24*60*60/1000/1000/1000,3), //km3
-      CanalVolume: toP(d3.sum(v,d=>d.flows.canal)*24*60*60/1000/1000/1000,3), //km3
-      Power_max: toP(d3.max(v,d=>d.generation.calc2.plantPower),4),
-      Power_min: toP(d3.min(v,d=>d.generation.calc2.plantPower),4),
-      Power_mean: toP(d3.mean(v,d=>d.generation.calc2.plantPower),4),
-      EFlowProportion_mean: toP(d3.mean(v,d=>d.flows.eFlowProportion),3),
-      EFlowProportion_min: toP(d3.min(v,d=>d.flows.eFlowProportion),3),
-      EFlowProportion_max: toP(d3.max(v,d=>d.flows.eFlowProportion),3),
-      LowFlowShutoffDays: v.filter(d=>d.generation.shutoffLowFlow).length,
-      HighHeadShutoffDays: v.filter(d=>d.generation.shutoffHighHead).length, 
-      LowHeadShutoffDays: v.filter(d=>d.generation.shutoffLowHead).length,
-      LowFlowShutoffProportion: toP(v.filter(d=>d.generation.shutoffLowFlow).length/365,2),
-      HighHeadShutoffProportion: toP(v.filter(d=>d.generation.shutoffHighHead).length/365,2),
-      LowHeadShutoffProportion: toP(v.filter(d=>d.generation.shutoffLowHead).length/365,2),
-      CapFactor: toP(d3.sum(v,d=>d.generation.calc2.plantEnergy)/(parameters.plantCapacity*24*365),3),
-      Proportion4Units: toP(v.filter(d=>d.generation.calc2.units==4).length/365,2),
-      Proportion3Units: toP(v.filter(d=>d.generation.calc2.units==3).length/365,2),
-      Proportion2Units: toP(v.filter(d=>d.generation.calc2.units==2).length/365,2),
-      Proportion1Units: toP(v.filter(d=>d.generation.calc2.units==1).length/365,2),
-      Proportion0Units: toP(v.filter(d=>d.generation.calc2.units==0).length/365,2)
-    }
-    ret.ShutoffDays = ret.LowFlowShutoffDays + ret.HighHeadShutoffDays + ret.LowHeadShutoffDays
-    ret.ShutoffDaysProportion = ret.ShutoffDays/365
-    ret.BypassVolume = toP(ret.RiverVolume - ret.CanalVolume,4)
-    ret.EFlowProportion = toP(ret.EFlowVolume/ret.RiverVolume,2)
-    ret.GenerationProportion = toP(ret.CanalVolume/ret.RiverVolume,2)
-    ret.BypassProportion = toP(1-ret.GenerationProportion,2)
-    ret.SpecificEnergy = toP(ret.Energy/ret.RiverVolume,3) //Mwh per km3
-    return ret
-  },d=>d.waterYear).map(v=>v[1])
+  function aggregateYearly(dys, fKey) {
+    return d3.rollups(dys, v=>{
+      let ret = {
+        WaterYear: v[0].waterYear,
+        Year: v[0].datetime.year,
+        Days: v.length,
+        Energy: toP(d3.sum(v,d=>d.generation.calc2.plantEnergy)/1000,4), //MWh
+        Power_max: toP(d3.max(v,d=>d.generation.calc2.plantPower),4),
+        Power_min: toP(d3.min(v,d=>d.generation.calc2.plantPower),4),
+        Power_mean: toP(d3.mean(v,d=>d.generation.calc2.plantPower),4),
+        Flow_mean: toP(d3.mean(v,d=>d.flow),4),
+        Flow_min: toP(d3.min(v,d=>d.flow),4),      
+        Flow_max: toP(d3.max(v,d=>d.flow),4),
+        RiverVolume: toP(d3.sum(v,d=>d.flow)*24*60*60/1000/1000/1000,3), //km3
+        EFlowVolume: toP(d3.sum(v,d=>d.flows.eFlows.total)*24*60*60/1000/1000/1000,3), //km3
+        CanalVolume: toP(d3.sum(v,d=>d.flows.canal)*24*60*60/1000/1000/1000,3), //km3
+        Power_max: toP(d3.max(v,d=>d.generation.calc2.plantPower),4),
+        Power_min: toP(d3.min(v,d=>d.generation.calc2.plantPower),4),
+        Power_mean: toP(d3.mean(v,d=>d.generation.calc2.plantPower),4),
+        EFlowProportion_mean: toP(d3.mean(v,d=>d.flows.eFlowProportion),3),
+        EFlowProportion_min: toP(d3.min(v,d=>d.flows.eFlowProportion),3),
+        EFlowProportion_max: toP(d3.max(v,d=>d.flows.eFlowProportion),3),
+        LowFlowShutoffDays: v.filter(d=>d.generation.shutoffLowFlow).length,
+        HighHeadShutoffDays: v.filter(d=>d.generation.shutoffHighHead).length, 
+        LowHeadShutoffDays: v.filter(d=>d.generation.shutoffLowHead).length,
+        LowFlowShutoffProportion: toP(v.filter(d=>d.generation.shutoffLowFlow).length/365,2),
+        HighHeadShutoffProportion: toP(v.filter(d=>d.generation.shutoffHighHead).length/365,2),
+        LowHeadShutoffProportion: toP(v.filter(d=>d.generation.shutoffLowHead).length/365,2),
+        CapFactor: toP(d3.sum(v,d=>d.generation.calc2.plantEnergy)/(parameters.plantCapacity*24*365),3),
+        Proportion4Units: toP(v.filter(d=>d.generation.calc2.units==4).length/365,2),
+        Proportion3Units: toP(v.filter(d=>d.generation.calc2.units==3).length/365,2),
+        Proportion2Units: toP(v.filter(d=>d.generation.calc2.units==2).length/365,2),
+        Proportion1Units: toP(v.filter(d=>d.generation.calc2.units==1).length/365,2),
+        Proportion0Units: toP(v.filter(d=>d.generation.calc2.units==0).length/365,2)
+      }
+      ret.ShutoffDays = ret.LowFlowShutoffDays + ret.HighHeadShutoffDays + ret.LowHeadShutoffDays
+      ret.ShutoffDaysProportion = ret.ShutoffDays/365
+      ret.BypassVolume = toP(ret.RiverVolume - ret.CanalVolume,4)
+      ret.EFlowProportion = toP(ret.EFlowVolume/ret.RiverVolume,2)
+      ret.GenerationProportion = toP(ret.CanalVolume/ret.RiverVolume,2)
+      ret.BypassProportion = toP(1-ret.GenerationProportion,2)
+      ret.SpecificEnergy = toP(ret.Energy/ret.RiverVolume,3) //Mwh per km3
+      return ret
+    },d=>fKey(d)).map(v=>v[1])
+  }
+
+  const yearly = aggregateYearly(dys, d=>d.waterYear)
+  yearly.forEach(v=>delete v.Year)
   //console.log(yearly[1])
+
+  const calendarYearly = aggregateYearly(dys, d=>d.datetime.year)
+  calendarYearly.forEach(v=>delete v.WaterYear)
+  console.log(calendarYearly[1])
 
   const annualExceedances = [...Array(101).keys()].map(v=> {
     return {
@@ -175,6 +186,7 @@ export default function statistics(parameters, dys) {
     return {
       Exceedance: v/100,
       Power: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.plantPower),3),
+      Energy: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.plantEnergy),3),
       // RiverFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.river),3),
       // EFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.eFlows.total),3),
       // EFlowProportion: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.eFlowProportion),3),
