@@ -27,8 +27,7 @@ export default function setup(params) {
       } else {
         levels.headpond = 0.000240 * day.flow + 988.4 + params.headpondLift
       }
-  
-  
+
       //Tailrace level
       levels.tailwaterLevel = interpolate(tailwaterLevels, 'flow', 'level', day.flow)
   
@@ -38,7 +37,7 @@ export default function setup(params) {
       //Left channel head losses
       levels.headlosses = {}
       try {
-        levels.headlosses.leftchannel = interpolate2d(leftchannelHeadlosses, levels.headpond, day.flows.channels.left)
+        levels.headlosses.leftchannel = interpolate2d(leftchannelHeadlosses, levels.headpond - params.headpondLift, day.flows.channels.left)
       } catch (e) {
         throw new Error('Left channel headlosses error: ' + e.message)
       }
@@ -46,6 +45,9 @@ export default function setup(params) {
       //Canal head losses
       levels.headlosses.canal = interpolate(canalHeadlosses, 'FlowCanal', 'HeadlossCanal', day.flows.canal)
   
+      levels.headlosses.upstream = levels.headlosses.leftchannel + levels.headlosses.canal
+      levels.headlosses.upstreamProportion = levels.headlosses.upstream / levels.grossHead
+      levels.headlosses.canalProportion = levels.headlosses.canal / levels.grossHead
       return levels
     },
     unitHeadlosses: (day, genCalc)=>{
@@ -57,6 +59,9 @@ export default function setup(params) {
         genCalc.headlossTurbine = 0
       }
       genCalc.netHead = day.levels.grossHead - day.levels.headlosses.leftchannel - day.levels.headlosses.canal - genCalc.headlossTurbine
+      genCalc.headlossTotal = day.levels.headlosses.upstream + genCalc.headlossTurbine
+      genCalc.headlossProportion = genCalc.headlossTotal / day.levels.grossHead
+      
       if (genCalc.netHead < params.minimumHead) {
         day.generation.shutoffLowHead = true
       }

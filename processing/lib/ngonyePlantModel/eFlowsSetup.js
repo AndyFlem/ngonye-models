@@ -50,19 +50,23 @@ export default function eFlowsSetup(parameters) {
     v.ewrMeasurementDate = measureDate(v.datetime)
     if (isMeasureDay(v.datetime) ) {
       const fdc = fdcs.find(f=>f.month == v.datetime.month && f.day == v.datetime.day)
-      v.ewrMeasureExceedance = 1-(d3.bisectLeft(fdc.exceedances, v.flow)/100)
+      let indx = d3.bisectLeft(fdc.exceedances, v.flow)
+      if (fdc.exceedances[indx] == v.flow) { indx++ }
+      v.ewrMeasureExceedance = 1-(indx/100)
     }
   })
   
   // Annotate each day in the flow series with the corresponding EWR measurment date and the exceedance for that date
   daily.forEach(v=> {
     v.ewrMeasurementDate = measureDate(v.datetime)
+
     v.ewrExceedance = daily[d3.bisector((d) => d.datetime).left(daily, v.ewrMeasurementDate)].ewrMeasureExceedance
     v.ewrFlowBandNumber = flowBandNumber(v.ewrExceedance)
     v.ewrFlowBand = flowBand(v.ewrFlowBandNumber)
   })
 
-  daily.forEach(d=>delete d.ewrMeasurementDate)
+  //daily.forEach(d=>delete d.ewrMeasurementDate)
+  daily.forEach(v=>v.ewrMeasurementDate = v.ewrMeasurementDate.toISODate())
   //daily.forEach(d=>delete d.ewrMeasureExceedance)
   daily.forEach(d=>delete d.datetime)
 

@@ -32,6 +32,8 @@ export default function setup(params) {
       //Get the generator efficiency
       generation.generatorEfficiency = interpolate(generatorEfficiency, 'UnitPowerFactor', 'GeneratorEfficiency', generation.unitPowerFactor )
     
+      generation.totalEfficiency = generation.unitEfficiency * generation.generatorEfficiency
+
       //Calculate generator power
       let tmpGeneratorPower = generation.unitPower * generation.generatorEfficiency
 
@@ -60,6 +62,7 @@ export default function setup(params) {
       generation.generatorPower = 0
       generation.plantPower = 0
       generation.plantEnergy = 0
+      generation.totalEfficiency = 0
     }
     return generation
 
