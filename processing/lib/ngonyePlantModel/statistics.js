@@ -255,8 +255,9 @@ export default function statistics(parameters, dys) {
   //console.log(calMonthlyEnergyExceedances)
 
   const statistics = {
-    energyAnnualMean: d3.mean(yearly, d=>d.energy),
-    energyAnnualP50: d3.quantile(yearly, 0.5, d=>d.energy),   
+    EnergyAnnual_mean: toP(d3.mean(yearly, d=>d.Energy),3),
+    EnergyAnnual_P50: toP(d3.quantile(yearly, 0.5, d=>d.Energy),3),
+    CapFactor_mean: toP(d3.mean(yearly, d=>d.CapFactor),3)
   }
 
   return {daily,weekly, monthly, yearly, calMonthly, calMonthlyEnergyExceedances, dailyExceedances, monthlyExceedances, annualExceedances, statistics}

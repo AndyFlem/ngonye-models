@@ -11,12 +11,6 @@ import { baseParams, models, lookupFilesets }  from '../../data/ngonyePlantModel
 
 const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') ) + '/data/'
 
-
-// let modelsReport = []
-// if (fs.existsSync(folder + 'ngonyePlantModels/models/modelStatistics.csv')) {
-//   modelsReport=d3.csvParse(fs.readFileSync(folder + 'ngonyePlantModels/models/modelStatistics.csv', 'utf-8'), d3.autoType)    
-// }
-
 // *****************************************************
 // Check if the modelStatistics output file exists
 let modelsReport = []
@@ -91,16 +85,22 @@ models.forEach(model=>{
       modelsReport[modelsReportIndx]=report
     }
   
-    //console.log(stats.statistics)
+    console.log(stats.statistics)
     fs.writeFileSync(folder + 'ngonyePlantModels/models/modelStatistics.csv', d3.csvFormat(modelsReport))
     fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_daily.csv', d3.csvFormat(stats.daily))
     fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_yearly.csv', d3.csvFormat(stats.yearly))
     fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_monthly.csv', d3.csvFormat(stats.monthly))
-    
+    fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_weekly.csv', d3.csvFormat(stats.weekly))
+
+    fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_calmonthly.csv', d3.csvFormat(stats.calMonthly))
+    fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_calmonthlyenergyexceedances.csv', d3.csvFormat(stats.calMonthlyEnergyExceedances))
+    fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_dailyexceedances.csv', d3.csvFormat(stats.dailyExceedances))
+
+    fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_monthlyexceedances.csv', d3.csvFormat(stats.monthlyExceedances))
+    fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_annualexceedances.csv', d3.csvFormat(stats.annualExceedances)) 
   } else {
     console.log(`Not running model ${modelRef}`)
   }
-
 })
 
 function loadDaily(folder, params) {
