@@ -8,11 +8,13 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { DateTime } from 'luxon'
 
-export default function eFlowsSetup(daily) {
+// refData is the full series used to produce the lookup FDCs
+// annoData is the series to be annotated with the EWRs
+export default function eFlowsSetup(refData, annoData) {
   
   console.log('**** Setting up eFlows')
 
-  // Build FDCs for each of the measurement dates
+  // Build a list of the measurement dates
   const measurementDates = [[10, 1]]
   for (let month = 1; month <= 12; month++) {
     measurementDates.push([month, 8])
@@ -26,15 +28,14 @@ export default function eFlowsSetup(daily) {
       month: m[0],
       day: m[1],
       exceedances: [...Array(101).keys()].map(e=> {
-        return d3.quantile(daily.filter(d=>d.datetime.month == m[0] && d.datetime.day == m[1]), e/100, d=>d.flow) 
+        return d3.quantile(refData.filter(d=>d.datetime.month == m[0] && d.datetime.day == m[1]), e/100, d=>d.flow) 
       })
     }
-
   })
   //console.log(fdcs)
 
   // Annotate each measurement date with the corresponding FDC exceedance
-  daily.forEach(v=> {
+  annoData.forEach(v=> {
     v.ewrMeasurementDate = measureDate(v.datetime)
     if (isMeasureDay(v.datetime) ) {
       const fdc = fdcs.find(f=>f.month == v.datetime.month && f.day == v.datetime.day)
@@ -45,10 +46,10 @@ export default function eFlowsSetup(daily) {
   })
   
   // Annotate each day in the flow series with the corresponding EWR measurment date and the exceedance for that date
-  daily.forEach(v=> {
+  annoData.forEach(v=> {
     v.ewrMeasurementDate = measureDate(v.datetime)
 
-    v.ewrExceedance = daily[d3.bisector((d) => d.datetime).left(daily, v.ewrMeasurementDate)].ewrMeasureExceedance
+    v.ewrExceedance = annoData[d3.bisector((d) => d.datetime).left(annoData, v.ewrMeasurementDate)].ewrMeasureExceedance
     v.ewrFlowBandNumber = flowBandNumber(v.ewrExceedance)
     v.ewrFlowBand = flowBand(v.ewrFlowBandNumber)
   })
@@ -60,7 +61,7 @@ export default function eFlowsSetup(daily) {
 
   //fs.writeFileSync(folder + inputFolder + 'daily.csv', d3.csvFormat(daily))
   //fs.writeFileSync(folder + inputFolder + 'ewrFDCs.csv', d3.csvFormat(fdcs.map(f=> f.exceedances)))
-  return daily
+  return annoData
 }
 
 // Gives the measure date (proceeding 8th, 18th or 28th) for the given date

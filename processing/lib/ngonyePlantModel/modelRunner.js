@@ -61,10 +61,10 @@ models.forEach(model=>{
 
     // *******************************************************************************
     // Recalculate the eFlows exceedance values for the daily flow series (if needed)
-    const recalculateEFlows = false
+    const recalculateEFlows = true
     if (!daily[0].ewrExceedance || recalculateEFlows) {
       // Calculate the eFlows setup values
-      daily = eFlowsSetup(daily)
+      daily = eFlowsSetup(daily, daily)
       // Save the daily flow data
       fs.writeFileSync(folder + '/syntheticFlowSeries/' + params.hydrologySet + '/processed/daily.csv', d3.csvFormat(daily))
     }    

@@ -6,13 +6,23 @@ import { DateTime } from 'luxon'
 
 import eFlowsSetup from '../eFlowsSetup.js'
 
-const folder = path.dirname(fileURLToPath(import.meta.url + '/../../../') ) + '/data/ngonyePlantModels/ccia/'
+const hydrologySet = '2016'
 
-// *****************************************************
-// Load the input hydrology file
-const cciaHydrology_raw=d3.csvParse(fs.readFileSync(folder + 'Ngonye_CC_flows_combined.csv', 'utf-8'), d3.autoType)
+const folder = path.dirname(fileURLToPath(import.meta.url + '/../../../') ) + '/data/'
+
+// Load the full series hydrology
+const fullSeries=d3.csvParse(fs.readFileSync(folder + 'syntheticFlowSeries/' + hydrologySet + '/processed/daily.csv', 'utf-8'), d3.autoType).map(v=> {
+  v.datetime = DateTime.fromJSDate(v.date).minus({hours: 2})
+  return v
+})
+
+// Load the CCIA hydrology series
+const cciaHydrology_raw=d3.csvParse(fs.readFileSync(folder + 'ngonyePlantModels/ccia/Ngonye_CC_flows_combined.csv', 'utf-8'), d3.autoType)
+
+// Rearrage
 const dates = cciaHydrology_raw.map(v=>DateTime.fromJSDate(v.Date))
 const modelNames = cciaHydrology_raw.columns.slice(1)
+
 const cciaModels = modelNames.map(modelName=>{
   return {
     modelName: modelName,
@@ -26,14 +36,15 @@ const cciaModels = modelNames.map(modelName=>{
   }
 })
 
+// Annotate with EWRs and save each of the CCIA hydrology series
 cciaModels.forEach((cciaModel,i)=>{ 
-  if (i==0) {
-    cciaModel.daily = eFlowsSetup(cciaModel.daily)
+  if (i>=0) {
+    console.log('Processing... ' + cciaModel.modelName + ' with ' + hydrologySet + ' hydrology.')
+    cciaModel.daily = eFlowsSetup(fullSeries, cciaModel.daily)
     cciaModel.daily.forEach(d=>delete d.datetime)
     cciaModel.daily.forEach(d=>d.ewrMeasurementDate=d.ewrMeasurementDate.toISODate())
-    fs.writeFileSync(folder + '/flowModels/' + cciaModel.modelName + '.csv', d3.csvFormat(cciaModel.daily))
+    fs.writeFileSync(folder + 'ngonyePlantModels/ccia/flowModels/' + hydrologySet + '/' + cciaModel.modelName + '.csv', d3.csvFormat(cciaModel.daily))
   }
-  
 })
 
 //console.log(dates)

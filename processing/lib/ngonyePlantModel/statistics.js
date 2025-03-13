@@ -167,7 +167,7 @@ export default function statistics(parameters, dys) {
 
   const calendarYearly = aggregateYearly(dys, d=>d.datetime.year)
   calendarYearly.forEach(v=>delete v.WaterYear)
-  console.log(calendarYearly[1])
+  //console.log(calendarYearly[1])
 
   const annualExceedances = [...Array(101).keys()].map(v=> {
     return {
@@ -271,7 +271,7 @@ export default function statistics(parameters, dys) {
     EnergyAnnual_P50: toP(d3.quantile(yearly, 0.5, d=>d.Energy),3),
     CapFactor_mean: toP(d3.mean(yearly, d=>d.CapFactor),3)
   }
-
+  
   return {daily,weekly, monthly, yearly, calMonthly, calMonthlyEnergyExceedances, dailyExceedances, monthlyExceedances, annualExceedances, statistics}
 }
 
