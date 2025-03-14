@@ -12,7 +12,7 @@ import { DateTime } from 'luxon'
 // annoData is the series to be annotated with the EWRs
 export default function eFlowsSetup(refData, annoData) {
   
-  console.log('**** Setting up eFlows')
+  console.log('...setting up eFlows')
 
   // Build a list of the measurement dates
   const measurementDates = [[10, 1]]

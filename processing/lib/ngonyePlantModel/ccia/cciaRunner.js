@@ -1,67 +1,56 @@
+import * as d3 from 'd3'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { DateTime } from 'luxon'
+
+import plantModel from '../plantModel.js'
+import calcPEStatistics from '../statistics.js'
+
+import { baseParams, models, lookupFilesets }  from '../../../data/ngonyePlantModels/modelParameters.js'
+
+const hydrologySet = '2016'
+const folder = path.dirname(fileURLToPath(import.meta.url + '/../../../') ) + '/data/'
+const plantModelRef = 'base_sh'
+
+const cciaModels=d3.csvParse(fs.readFileSync(folder + 'ngonyePlantModels/ccia/flowModels/cciaModels_' + hydrologySet + '.csv', 'utf-8'), d3.autoType)    
 
 // *****************************************************
-// Check if the modelStatistics output file exists
-let modelsReport = []
-if (fs.existsSync(folder + 'ngonyePlantModels/models/modelStatistics.csv')) {
-  modelsReport=d3.csvParse(fs.readFileSync(folder + 'ngonyePlantModels/models/modelStatistics.csv', 'utf-8'), d3.autoType)    
-}
+// ** Load model plant params based on the modelRef
+const modelParams = models.find(v=>v.modelRef==plantModelRef)
+if (!modelParams) { throw new Error(`Model not found with ref '${modelRef}'`) }
+const plantModelParams = {...baseParams,...modelParams}
+plantModelParams.lookupFileset = lookupFilesets.find(v=>v.ref == plantModelParams.lookupsFileset)
 
-// models.forEach(model=>{
-//   const modelRef = model.modelRef
-
-//   let runModel = false
+cciaModels.forEach((cciaModel,i)=>{
+  let runModel = false
   
-//   const modelsReportIndx = modelsReport.findIndex(v=>v.modelRef==modelRef)
-//   if (modelsReportIndx == -1) {
-//     runModel = true
-//   } else {
-//     if (modelsReport[modelsReportIndx].energyAnnualMean==null) {
-//       runModel = true
-//     }
-//     if (model.force) {
-//       runModel = true
-//     }
-//   }
+  if (i==0 && (cciaModel.energyAnnualMean==null || cciaModel.force)) {
+    runModel = true
+  }
 
-//   if (runModel) {
-//     const start = DateTime.now()
+  if (runModel) {
+    const start = DateTime.now()
   
-//     // create the output folder if it does not exist
-//     if (!fs.existsSync(folder + 'ngonyePlantModels/models/' + modelRef)) {
-//       fs.mkdirSync(folder + 'ngonyePlantModels/models/' + modelRef, { recursive: true })
-//     }
+    // create the output folder if it does not exist
+    if (!fs.existsSync(folder + 'ngonyePlantModels/ccia/results' + hydrologySet + '/' + cciaModel.ModelName)) {
+      fs.mkdirSync(folder + 'ngonyePlantModels/ccia/results' + hydrologySet + '/' + cciaModel.ModelName, { recursive: true })
+    }
 
-//     const recalculateEFlows = false
+    //Load the CCIA hydrology series
+    const cciaHydrology=d3.csvParse(fs.readFileSync(folder + 'ngonyePlantModels/ccia/flowModels/' + hydrologySet + '/' + cciaModel.ModelName + '.csv', 'utf-8'), d3.autoType)
 
-//     // *****************************************************
-//     // ** Load model params based on the modelRef
-//     const modelParams = models.find(v=>v.modelRef==modelRef)
-//     if (!modelParams) { throw new Error(`Model not found with ref '${modelRef}'`) }
-//     const params = {...baseParams,...modelParams}
-//     params.lookupFileset = lookupFilesets.find(v=>v.ref == params.lookupsFileset)
-//     //console.log(params)
+    // *******************************************************************************
+    // Run the model
+    cciaHydrology= plantModel(plantModelParams, cciaHydrology)
+    console.log(`Ran model ${modelRef} in ${DateTime.now().diff(start).as('milliseconds')} ms.`)
 
-//     // ********************
-//     // Load daily flow data
-//     let daily = loadDaily(folder, params)
-//     daily.map((v,i)=>v.index=i)
-
-//     // *******************************************************************************
-//     // Recalculate the eFlows exceedance values for the daily flow series (if needed)
-//     if (!daily[0].ewrExceedance || recalculateEFlows) {
-//       eFlowsSetup(params)
-//       daily = loadDaily(folder, params)
-//     }    
-
-//     // *******************************************************************************
-//     // Run the model
-//     daily= plantModel(params, daily)
-//     console.log(`Ran model ${modelRef} in ${DateTime.now().diff(start).as('milliseconds')} ms.`)
-
-//     // ***********************
-//     // ** Calculate statistics
-//     let stats = calcPEStatistics(params, daily)
-  
+    // ***********************
+    // ** Calculate statistics
+    let stats = calcPEStatistics(plantModelParams, cciaHydrology)
+    console.log(stats.statistics)
+  }
+})
 //     // **********************
 //     // ** Save the results
 //     const report = {...params,...stats.statistics}
@@ -73,7 +62,7 @@ if (fs.existsSync(folder + 'ngonyePlantModels/models/modelStatistics.csv')) {
 //       modelsReport[modelsReportIndx]=report
 //     }
   
-//     console.log(stats.statistics)
+
 //     fs.writeFileSync(folder + 'ngonyePlantModels/models/modelStatistics.csv', d3.csvFormat(modelsReport))
 //     fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_daily.csv', d3.csvFormat(stats.daily))
 //     fs.writeFileSync(folder + 'ngonyePlantModels/models/' + params.modelRef + '/' + params.modelRef + '_pe_yearly.csv', d3.csvFormat(stats.yearly))

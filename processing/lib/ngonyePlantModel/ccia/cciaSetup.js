@@ -37,15 +37,22 @@ const cciaModels = modelNames.map(modelName=>{
 })
 
 // Annotate with EWRs and save each of the CCIA hydrology series
-cciaModels.forEach((cciaModel,i)=>{ 
-  if (i>=0) {
-    console.log('Processing... ' + cciaModel.modelName + ' with ' + hydrologySet + ' hydrology.')
-    cciaModel.daily = eFlowsSetup(fullSeries, cciaModel.daily)
-    cciaModel.daily.forEach(d=>delete d.datetime)
-    cciaModel.daily.forEach(d=>d.ewrMeasurementDate=d.ewrMeasurementDate.toISODate())
-    fs.writeFileSync(folder + 'ngonyePlantModels/ccia/flowModels/' + hydrologySet + '/' + cciaModel.modelName + '.csv', d3.csvFormat(cciaModel.daily))
-  }
-})
+const annotateEWRs = false
+if (annotateEWRs) {
+  cciaModels.forEach((cciaModel,i)=>{ 
+    if (i>=0) {
+      console.log('Processing... ' + cciaModel.modelName + ' with ' + hydrologySet + ' hydrology.')
+      cciaModel.daily = eFlowsSetup(fullSeries, cciaModel.daily)
+      cciaModel.daily.forEach(d=>delete d.datetime)
+      cciaModel.daily.forEach(d=>d.ewrMeasurementDate=d.ewrMeasurementDate.toISODate())
+      fs.writeFileSync(folder + 'ngonyePlantModels/ccia/flowModels/' + hydrologySet + '/' + cciaModel.modelName + '.csv', d3.csvFormat(cciaModel.daily))
+    }
+  })
+}
+
+
+modelNames.unshift('ModelName')
+fs.writeFileSync(folder + 'ngonyePlantModels/ccia/flowModels/cciaModels_' + hydrologySet + '.csv', d3.csvFormatRows(modelNames.map(n=>[n])))
 
 //console.log(dates)
 //console.log(modelNames)
