@@ -6,7 +6,7 @@ import { DateTime } from 'luxon'
 
 import eFlowsSetup from '../eFlowsSetup.js'
 
-const hydrologySet = '2016'
+const hydrologySet = '2024'
 
 const folder = path.dirname(fileURLToPath(import.meta.url + '/../../../') ) + '/data/'
 
@@ -27,17 +27,30 @@ const cciaModels = modelNames.map(modelName=>{
   return {
     modelName: modelName,
     daily: dates.map((date,i)=> {
-      return {
+      let v = {
         date: date.toISODate(),
-        datetime: date,
+        datetime: date,        
         flow: cciaHydrology_raw[i][modelName]
       }
+      v.day = v.datetime.ordinal
+    
+      if (v.datetime.month>=10) {
+        v.waterYear = v.datetime.year
+        v.waterMonth = v.datetime.month-9
+        v.waterDay = v.datetime.ordinal - 273 - (v.datetime.isInLeapYear ? 1 : 0)
+      } else {
+        v.waterMonth = v.datetime.month+3
+        v.waterDay = v.datetime.ordinal + (365-273)
+        v.waterYear = v.datetime.year-1
+      }
+      v.waterWeek = Math.floor((v.waterDay-1)/7)+1
+      return v      
     })  
   }
 })
 
 // Annotate with EWRs and save each of the CCIA hydrology series
-const annotateEWRs = false
+const annotateEWRs = true
 if (annotateEWRs) {
   cciaModels.forEach((cciaModel,i)=>{ 
     if (i>=0) {

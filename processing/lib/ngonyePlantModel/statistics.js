@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 
-export default function statistics(parameters, dys) {
+export default function statistics(parameters, dys, fast) {
 
   const daily = dys.map(d=>{
     return {
@@ -112,6 +112,7 @@ export default function statistics(parameters, dys) {
   monthly.forEach(d=>delete d.WaterWeek)
   //console.log(monthly[1])
 
+
   const weekly = aggregate(dys, d=>d.datetime.startOf('week'))
   //console.log(weekly[1])
 
@@ -182,28 +183,31 @@ export default function statistics(parameters, dys) {
   })
   //console.log(annualExceedances)
 
-  const dailyExceedances = [...Array(101).keys()].map(v=> {
-    return {
-      Exceedance: v/100,
-      Power: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.plantPower),3),
-      Energy: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.plantEnergy),3),
-      // RiverFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.river),3),
-      // EFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.eFlows.total),3),
-      // EFlowProportion: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.eFlowProportion),3),
-      // CanalFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.canal),3),
-      // HeadPondLevel: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.headpond),3),
-      // TailwaterLevel: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.tailwaterLevel),3),
-      // GrossHead: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.grossHead),3),
-      // LeftChannelHeadloss: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.headlosses.leftchannel),3),
-      // CanalHeadloss: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.headlosses.canal),3),
-      // TotalHeadloss: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.headlossTotal),3),
-      // NetHead: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.netHead),3),
-      // UnitEfficiency: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.unitEfficiency),3),
-      // GeneratorEfficiency: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.generatorEfficiency),3),
-      // TotalEfficiency: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.totalEfficiency),3),
-    }
-  })
-  //console.log(dailyExceedances)
+  let dailyExceedances = []
+  if (!fast) {
+    dailyExceedances = [...Array(101).keys()].map(v=> {
+      return {
+        Exceedance: v/100,
+        Power: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.plantPower),3),
+        Energy: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.plantEnergy),3),
+        // RiverFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.river),3),
+        // EFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.eFlows.total),3),
+        // EFlowProportion: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.eFlowProportion),3),
+        // CanalFlow: toP(d3.quantile(dys, 1-(v/100), d=>d.flows.canal),3),
+        // HeadPondLevel: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.headpond),3),
+        // TailwaterLevel: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.tailwaterLevel),3),
+        // GrossHead: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.grossHead),3),
+        // LeftChannelHeadloss: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.headlosses.leftchannel),3),
+        // CanalHeadloss: toP(d3.quantile(dys, 1-(v/100), d=>d.levels.headlosses.canal),3),
+        // TotalHeadloss: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.headlossTotal),3),
+        // NetHead: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.netHead),3),
+        // UnitEfficiency: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.unitEfficiency),3),
+        // GeneratorEfficiency: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.generatorEfficiency),3),
+        // TotalEfficiency: toP(d3.quantile(dys, 1-(v/100), d=>d.generation.calc2.totalEfficiency),3),
+      }
+    })
+    //console.log(dailyExceedances)
+  }
 
   const monthlyExceedances = [...Array(101).keys()].map(v=> {
     return {
@@ -266,13 +270,16 @@ export default function statistics(parameters, dys) {
   })
   //console.log(calMonthlyEnergyExceedances)
 
+  const waterYearBasis = daily[0].month==10
+
   const statistics = {
-    EnergyAnnual_mean: toP(d3.mean(yearly, d=>d.Energy),3),
-    EnergyAnnual_P50: toP(d3.quantile(yearly, 0.5, d=>d.Energy),3),
-    CapFactor_mean: toP(d3.mean(yearly, d=>d.CapFactor),3)
+    YearType: waterYearBasis? 'Water' : 'Calendar',
+    EnergyAnnual_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.Energy),3),
+    EnergyAnnual_P50: toP(d3.quantile(waterYearBasis? yearly : calendarYearly, 0.5, d=>d.Energy),3),
+    CapFactor_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.CapFactor),3)
   }
   
-  return {daily,weekly, monthly, yearly, calMonthly, calMonthlyEnergyExceedances, dailyExceedances, monthlyExceedances, annualExceedances, statistics}
+  return {daily,weekly, monthly, yearly, calendarYearly, calMonthly, calMonthlyEnergyExceedances, dailyExceedances, monthlyExceedances, annualExceedances, statistics}
 }
 
 function toP(num, precision) {

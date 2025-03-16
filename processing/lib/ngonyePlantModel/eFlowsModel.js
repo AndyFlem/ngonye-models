@@ -35,7 +35,7 @@ export default function setup(parameters) {
     }
   })
 
-  return (month, flowCategory)=>{
+  return (month, flowCategory, riverFlow)=>{
       let ret = {}
       let total = 0
       channelFlowSet.forEach(s=>{
@@ -46,7 +46,20 @@ export default function setup(parameters) {
         total += flow
       })
       ret.total = total
+
+      // If there is not enough water for required eFlow then scale down
+      if (ret.total>riverFlow) {
+        const factor = riverFlow/ret.total
+        Object.keys(ret).forEach(k=>{
+          toP(ret[k] = ret[k]*factor,6)
+        })
+      }
+
       return ret
     }
   
 }
+
+function toP(num, precision) {
+  return Number(num.toPrecision(precision))
+} 

@@ -11,19 +11,20 @@ const folder = path.dirname(fileURLToPath(import.meta.url + '/../../') ) + '/dat
 export default function setup(parameters) {
   
   const eFlowsModel = eFlowsModelSetup(parameters)
+
+
   const spillProportions = d3.csvParse(fs.readFileSync(folder + 'lookups/' + parameters.lookupFileset.channelSpillProportions, 'utf-8'), d3.autoType)[0]
   const spillLimits = d3.csvParse(fs.readFileSync(folder + 'lookups/' + parameters.lookupFileset.spillLimits, 'utf-8'), d3.autoType)[0]
 
   return (day)=>{
     const flows = {}
     flows.river = day.flow
-    flows.eFlows = eFlowsModel(day.datetime.month, day.ewrFlowBand)
+    flows.eFlows = eFlowsModel(day.datetime.month, day.ewrFlowBand, day.flow)
 
-    if (flows.eFlows.total>flows.river) { throw new Error('eFlows exceed river flow') }
-    flows.eFlowProportion = flows.eFlows.total / flows.river
+    flows.eFlowProportion = toP(flows.eFlows.total / flows.river,3)
     
-    flows.availableGenerationFlow = flows.river - flows.eFlows.total
-    flows.availableGenerationFlowProportion = flows.availableGenerationFlow / flows.river
+    flows.availableGenerationFlow = toP(flows.river - flows.eFlows.total,6)
+    flows.availableGenerationFlowProportion = toP(flows.availableGenerationFlow / flows.river,3)
 
     flows.canal = d3.min([flows.availableGenerationFlow, parameters.unitsAvailable*parameters.maximumFlowUnit])
     if (flows.canal < parameters.minimumFlowUnit) { 
@@ -33,8 +34,11 @@ export default function setup(parameters) {
     }
 
     flows.spill = {}
-    flows.spill.total = flows.river - flows.eFlows.total - flows.canal
-    if (flows.spill.total<0) { throw new Error('Spill is negative') }
+    flows.spill.total = toP(flows.river - flows.eFlows.total - flows.canal,6)
+    if (flows.spill.total<-1) { 
+      console.log(day,flows)
+      throw new Error('Spill is negative') 
+    }
 
     flows.spill.channelA = d3.min([spillLimits.channelA-flows.eFlows.channelA,flows.spill.total * spillProportions.A])
     flows.spill.channelC = d3.min([spillLimits.channelC-flows.eFlows.channelC,flows.spill.total * spillProportions.C])
@@ -54,3 +58,7 @@ export default function setup(parameters) {
   }
   
 }
+
+function toP(num, precision) {
+  return Number(num.toPrecision(precision))
+} 
