@@ -60,19 +60,29 @@ cciaModels.forEach((cciaModel,i)=>{
     console.log(cciaModel)
 
     fs.writeFileSync(folder + 'ngonyePlantModels/ccia/flowModels/cciaModels_' + hydrologySet + '.csv', d3.csvFormat(cciaModels))
-     
+    
+    let outFolder = folder + 'ngonyePlantModels/ccia/flowModels/' + hydrologySet + '/' + cciaModel.ModelName + '/'
+    if (!fs.existsSync(outFolder)) {
+      fs.mkdirSync(outFolder, { recursive: true })
+    }
+
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_daily.csv', d3.csvFormat(stats.daily))
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_yearly.csv', d3.csvFormat(stats.yearly))
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_monthly.csv', d3.csvFormat(stats.monthly))
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_weekly.csv', d3.csvFormat(stats.weekly))
+
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_calmonthly.csv', d3.csvFormat(stats.calMonthly))
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_calmonthlyenergyexceedances.csv', d3.csvFormat(stats.calMonthlyEnergyExceedances))
+
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_monthlyexceedances.csv', d3.csvFormat(stats.monthlyExceedances))
+    fs.writeFileSync(outFolder + plantModelRef + '_pe_annualexceedances.csv', d3.csvFormat(stats.annualExceedances)) 
+
+
     console.log(`Ran CCIA model ${cciaModel.ModelName} in ${DateTime.now().diff(start).as('milliseconds')} ms.`)
   } else {
     console.log(`Did not run CCIA model ${cciaModel.ModelName}.`)
   }
-}) 
-
-function loadDaily(folder, params) {
-  return d3.csvParse(fs.readFileSync(folder + '/syntheticFlowSeries/' + params.hydrologySet + '/processed/daily.csv', 'utf-8'), d3.autoType).map(v=> {
-    v.datetime = DateTime.fromJSDate(v.date).minus({hours: 2})
-    return v
-  })
-}
+})
 
 function toP(num, precision) {
   return Number(num.toPrecision(precision))

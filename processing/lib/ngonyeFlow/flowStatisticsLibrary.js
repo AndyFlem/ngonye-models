@@ -25,7 +25,7 @@ export default function processDailyFlow(daily, outputFolder) {
       ret[m+1] = d3.quantile(daily.filter(d=>d.datetime.month==(m+1)), 1-ret.exceedance, d=>d.flow)
     })    
     return ret
-  })
+  }) 
   
   // Add FDC percentiles, Water Day, Week and Year to daily data
   daily.forEach((v,i)=> {

@@ -276,12 +276,17 @@ export default function statistics(parameters, dys, fast) {
     YearType: waterYearBasis? 'Water' : 'Calendar',
     EnergyAnnual_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.Energy),3),
     EnergyAnnual_P50: toP(d3.quantile(waterYearBasis? yearly : calendarYearly, 0.5, d=>d.Energy),3),
-    CapFactor_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.CapFactor),3)
+    P95Power: toP(d3.quantile(dys, 0.05, d=>d.generation.calc2.plantPower),3),
+    CapFactor_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.CapFactor),3),
+    LowFlowShutoffProportion_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.LowFlowShutoffProportion),3),
+    HighHeadShutoffProportion_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.HighHeadShutoffProportion),3),
+    LowHeadShutoffProportion_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.LowHeadShutoffProportion),3),
+    ShutoffDaysProportion_mean: toP(d3.mean(waterYearBasis? yearly : calendarYearly, d=>d.ShutoffDaysProportion),3),
   }
   
   return {daily,weekly, monthly, yearly, calendarYearly, calMonthly, calMonthlyEnergyExceedances, dailyExceedances, monthlyExceedances, annualExceedances, statistics}
 }
-
+ 
 function toP(num, precision) {
   return Number(num.toPrecision(precision))
 } 
