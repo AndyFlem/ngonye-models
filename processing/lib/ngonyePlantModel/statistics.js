@@ -270,7 +270,7 @@ export default function statistics(parameters, dys, fast) {
   })
   //console.log(calMonthlyEnergyExceedances)
 
-  const waterYearBasis = daily[0].month==10
+  const waterYearBasis = dys[0].datetime.month==10
 
   const statistics = {
     YearType: waterYearBasis? 'Water' : 'Calendar',

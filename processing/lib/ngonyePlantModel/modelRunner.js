@@ -61,7 +61,7 @@ models.forEach(model=>{
 
     // *******************************************************************************
     // Recalculate the eFlows exceedance values for the daily flow series (if needed)
-    const recalculateEFlows = true
+    const recalculateEFlows = false
     if (!daily[0].ewrExceedance || recalculateEFlows) {
       // Calculate the eFlows setup values
       daily = eFlowsSetup(daily, daily)
