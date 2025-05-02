@@ -26,8 +26,23 @@ export const models = [
     force: true,
     modelRef:'sh_2024_7.8mhead',
     modelName: 'Sinohydro Bid - Hydrology to 2024 - Minimum head 7.8m',
-    description: 'Parameters from Sinohydro bid with 2024 hydrology and minimum head of 7.8m',
+    description: '',
   },
+  {
+    force: true,
+    modelRef:'sh_2024_26mmaxhead',
+    modelName: 'Sinohydro Bid - Hydrology to 2024 - Maximum head 26m',
+    description: '',
+    maximumHead: 26
+  },  
+  {
+    force: true,
+    modelRef:'sh_2024_26mmaxhead_40minflow',
+    modelName: 'Sinohydro Bid - Hydrology to 2024 - Maximum head 26m - Min flow 40',
+    description: '',
+    maximumHead: 26,
+    minimumFlowUnit: 40
+  },    
 ]
 
 export const lookupFilesets = [
