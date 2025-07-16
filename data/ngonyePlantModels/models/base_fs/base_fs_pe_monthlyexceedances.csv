@@ -1,4 +1,4 @@
-Exceedance,Flow,Power,Energy,GrossHead,CanalFlow,NetHead,TotalEfficiency,TotalHeadloss,EFlowProportion,GenerationProportion,BypassProportion,SpecificEnergy,ShutoffProportion
+exceedance,flow,plantPower,energy,grossHead,canalFlow,netHead,totalEfficiency,totalHeadloss,eFlowProportion,generationProportion,bypassProportion,specificEnergy,shutoffProportion
 0,8630,192,140000,25.6,1100,25.4,0.921,1.94,0.48,0.89,0.87,49.2,1
 0.01,5230,185,135000,25.6,1100,25.4,0.92,1.94,0.46,0.88,0.79,48.4,0.516
 0.02,4600,181,133000,25.6,1100,25.4,0.919,1.94,0.45,0.87,0.76,48,0.0667

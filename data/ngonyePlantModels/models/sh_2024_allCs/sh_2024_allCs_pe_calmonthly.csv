@@ -1,13 +1,2 @@
-Month,WaterMonth,Flow_mean,Flow_min,Flow_max,Energy_max,Energy_min,Energy_mean,Power_max,Power_min,Power_mean,EFlowProportion_mean,GenerationProportion_mean,BypassProportion_mean,LowFlowShutoffProportion,HighHeadShutoffProportion,LowHeadShutoffProportion,CapFactor_mean,SpecificEnergy_mean
-10,1,238.7,134.5,445.8,56360,15320,26750,75.76,20.6,35.96,0.32,0.68,0.32,0,0.015,0,0.2,41.7
-11,2,275.7,153.2,546.2,69580,18110,32570,96.64,25.15,45.23,0.27,0.73,0.27,0,0,0,0.25,45.5
-12,3,438.4,229.8,832.7,107000,30690,56880,143.8,41.25,76.45,0.19,0.81,0.19,0,0,0,0.42,48.6
-1,4,737.5,331.5,1712,133800,44200,90590,179.9,59.41,121.8,0.14,0.84,0.16,0,0,0,0.68,47.6
-2,5,1369,462.8,8627,132200,5029,103500,191.4,7.484,152.7,0.11,0.76,0.24,0,0,0.0093,0.85,39.9
-3,6,2527,617.6,7963,141100,0,107400,189.6,0,144.4,0.082,0.54,0.46,0,0,0.065,0.8,24.4
-4,7,2954,670.2,7415,138800,0,100800,192.8,0,140,0.074,0.45,0.55,0,0,0.052,0.78,18.7
-5,8,2244,716.3,5262,143100,35890,117600,192.3,48.24,158,0.12,0.54,0.46,0,0,0.0077,0.88,23.9
-6,9,1226,328.4,2829,132000,36580,111200,183.3,50.8,154.4,0.17,0.74,0.26,0,0,0,0.86,37.9
-7,10,613.1,242.7,1321,129500,25700,68320,174.1,34.54,91.82,0.28,0.73,0.27,0,0,0,0.51,41.9
-8,11,393.2,198.9,711.9,82320,20260,41970,110.6,27.23,56.41,0.34,0.66,0.34,0,0,0,0.31,39.9
-9,12,289.1,151.8,505,59660,15120,30680,82.86,21,42.61,0.34,0.66,0.34,0,0,0,0.24,40.9
+month,waterMonth,flowMean,flowMin,flowMax,energyMax,energyMin,energyMean,plantPowerMax,plantPowerMin,plantPowerMean,eFlowProportionMean,generationProportionMean,bypassProportionMean,lowFlowShutoffProportion,highHeadShutoffProportion,lowHeadShutoffProportion,capFactorMean,specificEnergyMean
+10,1,1109,134.5,8627,143100,0,74020,192.8,0,101.7,0.2,0.68,0.32,0,0.0013,0.011,0.56,37.6

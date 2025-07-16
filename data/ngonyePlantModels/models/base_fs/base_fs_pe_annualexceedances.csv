@@ -1,4 +1,4 @@
-Exceedance,Energy,RiverVolume,CapFactor,EFlowProportion,SpecificEnergy,ShutoffDaysProportion
+exceedance,energy,riverVolume,capFactor,eFlowProportion,specificEnergy,shutoffDaysProportion
 0,1017,73.6,0.645,0.25,44.4,0.167
 0.01,1010,68.3,0.64,0.232,44.1,0.165
 0.02,1001,66.5,0.635,0.222,44,0.134
