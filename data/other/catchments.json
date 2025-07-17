@@ -1,0 +1,85 @@
+{
+    "name": "catchments",
+    "children": [
+        {
+            "name": "Angola",
+            "children": [
+                {
+                    "name": "Upper Zambezi",
+                    "area":  81044,
+                    "runoff": 19040,
+                    "area_pct": 26,
+                    "runoff_pct": 51
+                },
+                {
+                    "name": "Kabompo",
+                    "area":  1639,
+                    "runoff": 196,
+                    "area_pct": 1,
+                    "runoff_pct": 1
+                },
+                {
+                    "name": "Lungwebungu",
+                    "area":  37003,
+                    "runoff": 3208,
+                    "area_pct": 12,
+                    "runoff_pct": 9
+                },
+                {
+                    "name": "Luanginga",
+                    "area":  25187,
+                    "runoff": 1307,
+                    "area_pct": 8,
+                    "runoff_pct": 3
+                },
+                {
+                    "name": "Upper Barotse",
+                    "area":  1873,
+                    "runoff": 0,
+                    "area_pct": 1,
+                    "runoff_pct": 0
+                }                                                               
+            ]
+        },
+        {
+            "name": "Zambia",
+            "children": [
+                {
+                    "name": "Upper Zambezi",
+                    "area":  18473,
+                    "runoff": 4340,
+                    "area_pct": 6,
+                    "runoff_pct": 12
+                },
+                {
+                    "name": "Kabompo",
+                    "area":  70541,
+                    "runoff": 8419,
+                    "area_pct": 22,
+                    "runoff_pct": 22
+                },
+                {
+                    "name": "Lungwebungu",
+                    "area":  4376,
+                    "runoff": 379,
+                    "area_pct": 1,
+                    "runoff_pct": 1
+                },
+                {
+                    "name": "Luanginga",
+                    "area":  16984,
+                    "runoff": 882,
+                    "area_pct": 5,
+                    "runoff_pct": 2
+                },
+                {
+                    "name": "Upper Barotse",
+                    "area":  58177,
+                    "runoff": 0,
+                    "area_pct": 18,
+                    "runoff_pct": 0
+                }                                                               
+            ]
+        }        
+    ]
+}
