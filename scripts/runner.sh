@@ -1,4 +1,5 @@
 nodemon --verbose \
+    --watch ../lib/ngonyePlantModel/modelRunner.js \
     --watch ../lib/ngonyePlantModel/model/plantModel.js \
     --watch ../lib/ngonyePlantModel/model/powerAndEnergyModel.js \
     --watch ../lib/ngonyePlantModel/model/flowsModel.js \
@@ -9,3 +10,4 @@ nodemon --verbose \
     --watch -e js,csv \
     ../lib/ngonyePlantModel/modelRunner.js &
 
+``
