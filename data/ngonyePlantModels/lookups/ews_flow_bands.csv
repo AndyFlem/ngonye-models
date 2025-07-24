@@ -1,0 +1,6 @@
+FlowBand,Exceedance,RepExceedance
+Wet,Q<10,0.05
+Mod wet,Q11-40,0.255
+Normal,Q35-70,0.525
+Mod dry,Q65-90,77.5
+Dry,Q90-99,0.945
