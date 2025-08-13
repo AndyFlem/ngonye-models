@@ -1,0 +1,40 @@
+{
+    "name": "catchments",
+    "children": [
+        {
+            "name": "Angola",
+            "area":  254000,
+            "runoff": 22.6,
+            "area_pct": 36,
+            "runoff_pct": 41
+        },
+        {
+            "name": "Zambia",
+            "area":  257000,
+            "runoff": 20.7,
+            "area_pct": 36,
+            "runoff_pct": 37
+        },
+        {
+            "name": "Zimbabwe",
+            "area":  155000,
+            "runoff": 9.7,
+            "area_pct": 22,
+            "runoff_pct": 18
+        },
+        {
+            "name": "Namibia",
+            "area":  17000,
+            "runoff": 1,
+            "area_pct": 3,
+            "runoff_pct": 2
+        },
+        {
+            "name": "Botswana",
+            "area":  23000,
+            "runoff": 1.3,
+            "area_pct": 2,
+            "runoff_pct": 2
+        }      
+    ]
+}

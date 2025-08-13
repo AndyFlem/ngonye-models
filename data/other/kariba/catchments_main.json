@@ -1,0 +1,19 @@
+{
+    "name": "catchments",
+    "children": [
+        {
+            "name": "Upper",
+            "area":  525000,
+            "runoff": 43.8,
+            "area_pct": 74,
+            "runoff_pct": 79
+        },
+        {
+            "name": "Lower",
+            "area":  182000,
+            "runoff": 11.5,
+            "area_pct": 26,
+            "runoff_pct": 21
+        }
+    ]
+}
