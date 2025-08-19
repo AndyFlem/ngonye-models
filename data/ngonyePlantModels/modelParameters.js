@@ -1,12 +1,12 @@
 export const baseParams = {
   type: 'sh',
-  hydrologySet:'2016',
+  hydrologySet:'2024',
   ewrCategorySet: 'Recommendation 1',
   tailwaterLift: 0,
   headpondLift: 0,
   plantCapacity: 180,
   unitsAvailable: 4,
-  minimumHead: 10,
+  minimumHead: 7.8,
   maximumHead: 25.4,
   maximumHeadShutdown: true,
   minimumFlowUnit: 50,
@@ -23,71 +23,74 @@ export const baseParams = {
 }
 export const models = [
   {
-    modelRef:'base_sh',
-    modelName: 'Base Case Sinohydro Bid',
-    description: 'Base case model as with parameters from Sinohydro bid',
-  },
-  {
-    modelRef:'base_sh_2024',
-    modelName: 'Base Case Sinohydro Bid - Hydrology to 2024',
-    description: 'Base case model as with parameters from Sinohydro bid',
-    hydrologySet:'2024',
-  },
-  {
-    modelRef:'sh_2016_7.8mhead',
-    modelName: 'Sinohydro Bid - Minimum head 7.8m',
-    description: 'Parameters from Sinohydro bid with minimum head of 7.8m',
-    minimumHead: 7.8,
-  },
-  {
     force: true,
     modelRef:'sh_2024_7.8mhead',
-    modelName: 'Sinohydro Bid - Hydrology to 2024 - Minimum head 7.8m',
+    modelName: 'Base Case - EPC Contract',
     description: 'Parameters from Sinohydro bid with 2024 hydrology and minimum head of 7.8m',
-    minimumHead: 7.8,
-    hydrologySet:'2024',
-  },   
+  },
   {
-    modelRef:'sh_2016_50mwgen',
+    modelRef:'fs',
+    modelName: 'Feasibility Study',
+    description: 'Model presented to EPC bidders with FS parameters',
+    type: 'fs',
+    hydrologySet: '2016',
+    minimumHead: 10,
+    maximumHeadShutdown: false,
+    constrainFinalGeneratorOutput: false,
+    lookupsFileset: 'fs'
+  }, {
+    modelRef:'fs_2024',
+    modelName: 'Feasibility Study, 2024 Hydrology',
+    description: 'Model presented to EPC bidders with FS parameters and 2024 hydrology',
+    type: 'fs',
+    hydrologySet: '2024',
+    minimumHead: 10,
+    maximumHeadShutdown: false,
+    constrainFinalGeneratorOutput: false,
+    lookupsFileset: 'fs'
+  },{
+    modelRef:'sh_2024_10mhead',
+    modelName: 'Sinohydro Bid - Minimum head 10m',
+    description: 'Parameters from Sinohydro bid with minimum head of 7.8m',
+    minimumHead: 10,
+  },{
+    modelRef:'sh_2016_7.8mhead',
+    modelName: 'Sinohydro Bid - 2016 Hydrology',
+    description: 'Parameters from Sinohydro bid with 2016 hydrology and minimum head of 7.8m',
+    hydrologySet: '2016'
+  },{
+    modelRef:'sh_2024_50mwgen',
     modelName: 'Sinohydro Bid - 50MW Generator',
     description: 'Parameters from Sinohydro bid with 50MW generator',
     maxGeneratorOutput: 50,
   },  
   {
-    modelRef:'sh_2024_50cmhead',
-    modelName: 'Sinohydro Bid - 50cm Head Increase',
-    description: 'Parameters from Sinohydro bid, 2024 hydrology with 50cm headpond lift',
-    hydrologySet:'2024',
+    modelRef:'sh_2024_50mwgen',
+    modelName: 'Sinohydro Bid - 50cm Headpond Lift',
+    description: 'Parameters from Sinohydro bid with 50cm headpond lift',
     headpondLift: 0.5,
     maximumHead: 25.9,
   },  
   { 
     modelRef:'sh_2024_allCs',
     modelName: 'Sinohydro Bid - Lower EFlows',
-    description: 'Parameters from Sinohydro bid, 2024 hydrology with eFlows all Cs',
-    hydrologySet:'2024',
+    description: 'Parameters from Sinohydro bid with eFlows all Cs',
     ewrCategorySet: 'All Cs',
   },
   {
-    modelRef:'base_fs',
-    modelName: 'Base Case FS',
-    description: 'Base case model as presented to EPC bidders with FS parameters',
-    type: 'fs',
-    maximumHeadShutdown: false,
-    constrainFinalGeneratorOutput: false,
-    lookupsFileset: 'fs'
-  },
+    modelRef:'sh_2024_25cmtailwater_lift',
+    modelName: 'Sinohydro Bid - 25cm Tailwater Lift',
+    description: 'Parameters from Sinohydro bid with 25cm tailwater lift',
+    tailwaterLift: 0.25,
+    maximumHead: 25.9,
+  },  
   {
-    modelRef:'base_fs_2024',
-    modelName: 'Base Case FS - Hydrology to 2024',
-    description: 'Base case model as presented to EPC bidders with FS parameters  - Hydrology to 2024',
-    hydrologySet:'2024',
-    type: 'fs',
-    maximumHeadShutdown: false,
-    constrainFinalGeneratorOutput: false,
-    lookupsFileset: 'fs'
-  }
-
+    modelRef:'sh_2024_25cmtailwater_drop',
+    modelName: 'Sinohydro Bid - 25cm Tailwater Drop',
+    description: 'Parameters from Sinohydro bid with 25cm tailwater drop',
+    tailwaterLift: -0.25,
+    maximumHead: 25.9,
+  },    
 ]
 
 export const lookupFilesets = [
